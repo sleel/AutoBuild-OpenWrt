@@ -22,7 +22,7 @@
 #echo 'src-git small https://github.com/kenzok8/small' >>feeds.conf.default
 sed -i '$a src-git nas https://github.com/linkease/nas-packages.git;master' feeds.conf.default
 sed -i '$a src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' feeds.conf.default
-git clone https://github.com/linkease/istore.git package/lean/istore
-git clone https://github.com/linkease/istore-ui.git package/lean/istore-ui
-git clone https://github.com/jerrykuku/luci-theme-argon.git package/lean/luci-theme-argon
-git clone https://github.com/jjm2473/luci-app-argon-config.git package/lean/luci-app-argon-config
+git clone https://github.com/linkease/istore.git package/istore
+git clone https://github.com/linkease/istore-ui.git package/istore-ui
+git clone https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon
+git clone https://github.com/jjm2473/luci-app-argon-config.git package/luci-app-argon-config
