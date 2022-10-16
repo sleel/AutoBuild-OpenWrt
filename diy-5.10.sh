@@ -24,4 +24,4 @@ sed -i 's/KERNEL_PATCHVER:=5.15/KERNEL_PATCHVER:=5.10/g' ./target/linux/x86/Make
 #git clone https://github.com/linkease/istore.git package/lean/istore
 #git clone https://github.com/linkease/istore-ui.git package/lean/istore-ui
 #git clone https://github.com/jerrykuku/luci-theme-argon.git package/lean/luci-theme-argon
-git clone https://github.com/jjm2473/luci-app-argon-config.git package/lean/luci-app-argon-config
+#git clone https://github.com/jjm2473/luci-app-argon-config.git package/lean/luci-app-argon-config
