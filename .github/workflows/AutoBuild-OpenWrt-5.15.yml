@@ -11,7 +11,7 @@
 # Blog: https://p3terx.com
 #=================================================
 
-name: Build OpenWrt
+name: AutoBuild-OpenWrt-5.15
 
 on:
   repository_dispatch:
