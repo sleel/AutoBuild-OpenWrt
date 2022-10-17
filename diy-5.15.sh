@@ -24,4 +24,3 @@ sed -i 's/KERNEL_PATCHVER:=5.10/KERNEL_PATCHVER:=5.15/g' ./target/linux/x86/Make
 #git clone https://github.com/linkease/istore.git package/lean/istore
 #git clone https://github.com/linkease/istore-ui.git package/lean/istore-ui
 sed -i '$a src-git jerryk https://github.com/jerrykuku/openwrt-package' feeds.conf.default
-git clone https://github.com/jjm2473/luci-app-argon-config.git package/luci-app-argon-config
