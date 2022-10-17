@@ -23,5 +23,5 @@ sed -i 's/KERNEL_PATCHVER:=5.10/KERNEL_PATCHVER:=5.15/g' ./target/linux/x86/Make
 #sed -i '$a src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' feeds.conf.default
 #git clone https://github.com/linkease/istore.git package/lean/istore
 #git clone https://github.com/linkease/istore-ui.git package/lean/istore-ui
-rm -rf ./feeds/luci/themes/luci-theme-argon git clone https://github.com/jerrykuku/luci-theme-argon.git ./feeds/luci/themes/luci-theme-argon
-git clone https://github.com/jjm2473/luci-app-argon-config.git package/lean/luci-app-argon-config
+sed -i '$a src-git jerryk https://github.com/jerrykuku/openwrt-package' feeds.conf.default
+git clone https://github.com/jjm2473/luci-app-argon-config.git package/luci-app-argon-config
