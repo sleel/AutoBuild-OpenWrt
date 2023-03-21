@@ -23,4 +23,3 @@ sed -i '$a src-git nas https://github.com/linkease/nas-packages.git;master' feed
 sed -i '$a src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' feeds.conf.default
 git clone https://github.com/linkease/istore.git package/istore
 git clone https://github.com/linkease/istore-ui.git package/istore-ui
-git revert 9364fa6e6ca3485767a70556d6f1fb09b3e09f4b
