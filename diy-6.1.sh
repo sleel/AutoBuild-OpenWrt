@@ -17,10 +17,9 @@ sed -i 's/KERNEL_PATCHVER:=5.15/KERNEL_PATCHVER:=6.1/g' ./target/linux/x86/Makef
 #sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
 
 # Add a feed source
-# sed -i '$a src-git kenzo https://github.com/kenzok8/openwrt-packages' feeds.conf.default
 sed -i '$a src-git nas https://github.com/linkease/nas-packages.git;master' feeds.conf.default
 sed -i '$a src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' feeds.conf.default
 git clone https://github.com/linkease/istore.git package/istore
 git clone https://github.com/linkease/istore-ui.git package/istore-ui
-git clone https://github.com/jerrykuku/luci-app-argon-config.git  package/luci-app-argon-config
+git clone https://github.com/sleel/luci-app-argon-config.git  package/luci-app-argon-config
 git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon-18.06
