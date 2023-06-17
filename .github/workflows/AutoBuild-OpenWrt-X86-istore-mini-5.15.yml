@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: AutoBuild-OpenWrt-istore-mini-5.15
+name: AutoBuild-OpenWrt-X86-istore-mini-5.15
 
 on:
   repository_dispatch:
