@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: AutoBuild-OpenWrt-mwan3-mini-5.4
+name: AutoBuild-OpenWrt-X86-mwan3-mini-5.4
 
 on:
   repository_dispatch:
