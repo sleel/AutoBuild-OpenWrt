@@ -23,3 +23,5 @@ ZZZ="package/lean/default-settings/files/zzz-default-settings"
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 sed -i "s/LEDE /SEELE COMPILED ON $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ
 sed -i 's/OpenWrt/NERV-SEELE/g' package/base-files/files/bin/config_generate
+rm -rf ./feeds/packages/net/ddns-scripts/files/usr/lib/ddns/update_cloudflare_com_v4.sh
+curl -fsSL  https://raw.githubusercontent.com/sleel/AutoBuild-OpenWrt/refs/heads/main/update_cloudflare_com_v4.sh > ./feeds/packages/net/ddns-scripts/files/usr/lib/ddns/update_cloudflare_com_v4.sh
