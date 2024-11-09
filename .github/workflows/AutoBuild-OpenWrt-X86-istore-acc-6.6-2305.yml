@@ -25,7 +25,7 @@ env:
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: istore-acc-2305.config
   DIY_P1_SH: diy-2305.sh
-  DIY_P2_SH: diy-part2.sh
+  DIY_P2_SH: diy-part2-2305.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
