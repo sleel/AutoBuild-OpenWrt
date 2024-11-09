@@ -21,5 +21,5 @@
 
 ZZZ="package/lean/default-settings/files/zzz-default-settings"
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
-sed -i "s/LEDE /SEELE COMPILED ON $(TZ=UTC-8 date "+%Y.%m.%d") @ LEDE /g" $ZZZ
+sed -i "s/LEDE /SEELE COMPILED ON $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ
 sed -i 's/OpenWrt/NERV-SEELE/g' package/base-files/files/bin/config_generate
