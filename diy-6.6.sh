@@ -26,4 +26,4 @@ sed -i '$a src-git nas https://github.com/linkease/nas-packages.git;master' feed
 sed -i '$a src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' feeds.conf.default
 sed -i '$a src-git istore https://github.com/linkease/istore.git;main' feeds.conf.default
 git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon-18.06
-
+git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/ddns-go
