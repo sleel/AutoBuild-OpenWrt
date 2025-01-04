@@ -13,10 +13,9 @@
 # KERNEL_PATCHVER
 sed -i 's/KERNEL_PATCHVER:=6.6/KERNEL_PATCHVER:=6.12/g' ./target/linux/x86/Makefile
 
+
 # Uncomment a feed source
 #sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
-sed -i '/openwrt-23.05/d' feeds.conf.default
-sed -i 's/^#\(.*luci\)/\1/' feeds.conf.default
 
 # Add a feed source
 #echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
@@ -24,5 +23,5 @@ sed -i 's/^#\(.*luci\)/\1/' feeds.conf.default
 sed -i '$a src-git nas https://github.com/linkease/nas-packages.git;master' feeds.conf.default
 sed -i '$a src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' feeds.conf.default
 sed -i '$a src-git istore https://github.com/linkease/istore.git;main' feeds.conf.default
-git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon-18.06
-git clone https://github.com/sirpdboy/luci-app-ddns-go.git package/ddns-go
+git clone https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon
+git clone https://github.com/jerrykuku/luci-app-argon-config.git  package/luci-app-argon-config
