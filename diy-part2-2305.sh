@@ -23,4 +23,4 @@ ZZZ="package/lean/default-settings/files/zzz-default-settings"
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 sed -i "s/LEDE /SEELE BUILT ON $(TZ=UTC-8 date "+%Y.%m.%d") @ LEDE /g" $ZZZ
 sed -i "s/hostname='.*'/hostname='NERV'/g" ./package/base-files/files/bin/config_generate
-#sed -i "s/hostname='OpenWrt'/hostname='OpenWrt-SE'/g" ./package/base-files/files/bin/config_generate
+#sed -i "s/hostname='OpenWrt'/hostname='NERV'/g" ./package/base-files/files/bin/config_generate
