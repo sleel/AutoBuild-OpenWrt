@@ -11,7 +11,6 @@
 #
 
 # KERNEL_PATCHVER
-sed -i 's/KERNEL_PATCHVER:=6.1/KERNEL_PATCHVER:=5.4/g' ./target/linux/x86/Makefile
 sed -i 's/KERNEL_PATCHVER:=6.6/KERNEL_PATCHVER:=5.4/g' ./target/linux/x86/Makefile
 
 # Uncomment a feed source
