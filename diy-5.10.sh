@@ -15,7 +15,7 @@ sed -i 's/KERNEL_PATCHVER:=6.6/KERNEL_PATCHVER:=5.10/g' ./target/linux/x86/Makef
 
 # Uncomment a feed source
 #sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
-sed -i '/openwrt-24.10/d' feeds.conf.default
+sed -i -E '/^src-git[[:space:]]+luci.*;openwrt-2/d' feeds.conf.default
 sed -i 's/^#\(.*luci\)/\1/' feeds.conf.default
 
 # Add a feed source
