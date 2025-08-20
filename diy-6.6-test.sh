@@ -24,3 +24,4 @@ sed -i '$a src-git nas https://github.com/linkease/nas-packages.git;master' feed
 sed -i '$a src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' feeds.conf.default
 sed -i '$a src-git istore https://github.com/linkease/istore.git;main' feeds.conf.default
 sed -i '$a src-git smpackage https://github.com/kenzok8/small-package' feeds.conf.default
+git clone https://github.com/rozhuk-im/msd_lite.git package/msd_lite
