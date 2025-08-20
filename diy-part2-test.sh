@@ -24,3 +24,4 @@ sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 sed -i "s/LEDE /SEELE BUILT ON $(TZ=UTC-8 date "+%Y.%m.%d") @ LEDE /g" $ZZZ
 sed -i "s/hostname='LEDE'/hostname='NERV'/g" ./package/base-files/luci2/bin/config_generate
 rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd*,miniupnpd-iptables,wireless-regdb}
+git clone https://github.com/rozhuk-im/msd_lite.git package/msd_lite
