@@ -24,5 +24,9 @@ sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 sed -i "s/LEDE /SEELE BUILT ON $(TZ=UTC-8 date "+%Y.%m.%d") @ LEDE /g" $ZZZ
 sed -i "s/hostname='LEDE'/hostname='NERV'/g" ./package/base-files/luci2/bin/config_generate
 rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd*,miniupnpd-iptables,wireless-regdb}
-find feeds/ -type d -name "msd_lite" -exec rm -rf {} +
-git clone https://github.com/rozhuk-im/msd_lite.git package/msd_lite
+
+for pkg in msd_lite luci-app-msd_lite; do
+    rm -rf feeds/*/$pkg package/feeds/*/$pkg package/$pkg
+done
+svn export --force https://github.com/immortalwrt/packages/trunk/net/msd_lite package/msd_lite
+svn export --force https://github.com/immortalwrt/luci/trunk/applications/luci-app-msd_lite package/luci-app-msd_lite
