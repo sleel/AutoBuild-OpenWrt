@@ -26,7 +26,7 @@ sed -i "s/hostname='LEDE'/hostname='NERV'/g" ./package/base-files/luci2/bin/conf
 rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd*,miniupnpd-iptables,wireless-regdb}
 
 for pkg in msd_lite luci-app-msd_lite; do
-    rm -rf feeds/*/$pkg package/feeds/*/$pkg package/$pkg
+  rm -rf "package/$pkg" "package/feeds/"*/"$pkg" "feeds/"*/"$pkg"
 done
 git clone --depth=1 https://github.com/sleel/msd-lite-packages mypkgs
 cp -a mypkgs/msd_lite package/msd_lite
