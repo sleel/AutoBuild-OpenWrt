@@ -28,5 +28,7 @@ rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftabl
 for pkg in msd_lite luci-app-msd_lite; do
     rm -rf feeds/*/$pkg package/feeds/*/$pkg package/$pkg
 done
-svn export --force https://github.com/immortalwrt/packages/trunk/net/msd_lite package/msd_lite
-svn export --force https://github.com/immortalwrt/luci/trunk/applications/luci-app-msd_lite package/luci-app-msd_lite
+git clone --depth=1 https://github.com/sleel/msd-lite-packages mypkgs
+cp -a mypkgs/msd_lite package/msd_lite
+cp -a mypkgs/luci-app-msd_lite package/luci-app-msd_lite
+rm -rf mypkgs
