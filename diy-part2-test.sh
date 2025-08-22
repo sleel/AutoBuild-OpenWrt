@@ -32,5 +32,6 @@ for pkg in msd_lite luci-app-msd_lite; do
 done
 git clone --depth=1 https://github.com/sleel/msd-lite-packages mypkgs
 cp -a mypkgs/msd_lite package/msd_lite
-cp -a mypkgs/luci-app-msd_lite package/luci-app-msd_lite
+cp -a mypkgs/luci-app-msd_lite package/feeds/luci/applications/
 rm -rf mypkgs
+
