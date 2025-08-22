@@ -27,7 +27,8 @@ rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftabl
 
 for pkg in msd_lite luci-app-msd_lite; do
     find package -type d -name "$pkg" -exec rm -rf {} +
-    find feeds   -type d -name "$pkg" -exec rm -rf {} +
+    find feeds -type d -name "$pkg" -exec rm -rf {} +
+    find package/feeds -type l -name "$pkg" ! -exec test -e {} \; -delete
 done
 git clone --depth=1 https://github.com/sleel/msd-lite-packages mypkgs
 cp -a mypkgs/msd_lite package/msd_lite
