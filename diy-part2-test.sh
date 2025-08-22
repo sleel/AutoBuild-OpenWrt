@@ -30,7 +30,7 @@ for pkg in msd_lite luci-app-msd_lite; do
     find feeds -type d -name "$pkg" -exec rm -rf {} +
 done
 git clone --depth=1 https://github.com/sleel/msd-lite-packages mypkgs
-cp -a mypkgs/msd_lite package/msd_lite
-cp -a mypkgs/luci-app-msd_lite package/feeds/luci/applications/
+cp -a mypkgs/msd_lite feeds/packages/net/msd_lite
+cp -a mypkgs/luci-app-msd_lite feeds/luci/applications/luci-app-msd_lite
 rm -rf mypkgs
 
