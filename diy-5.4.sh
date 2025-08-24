@@ -11,7 +11,7 @@
 #
 
 # KERNEL_PATCHVER
-sed -i 's/KERNEL_PATCHVER:=6.6/KERNEL_PATCHVER:=5.4/g' ./target/linux/x86/Makefile
+sed -i 's/^KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=5.15/' ./target/linux/x86/Makefile
 
 # Uncomment a feed source
 #sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
@@ -25,4 +25,3 @@ sed -i '$a src-git nas https://github.com/linkease/nas-packages.git;master' feed
 sed -i '$a src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' feeds.conf.default
 sed -i '$a src-git istore https://github.com/linkease/istore.git;main' feeds.conf.default
 git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git  package/luci-theme-argon-18.06
-
