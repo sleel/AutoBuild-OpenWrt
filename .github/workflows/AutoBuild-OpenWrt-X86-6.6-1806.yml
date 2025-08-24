@@ -10,7 +10,7 @@
 # See /LICENSE for more information.
 #
 
-name: AutoBuild-OpenWrt-X86-istore-acc-6.6-1806
+name: AutoBuild-OpenWrt-X86-6.6-1806
 
 on:
   repository_dispatch:
