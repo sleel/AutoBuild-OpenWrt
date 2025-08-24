@@ -15,8 +15,8 @@ sed -i 's/KERNEL_PATCHVER:=6.6/KERNEL_PATCHVER:=5.4/g' ./target/linux/x86/Makefi
 
 # Uncomment a feed source
 #sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
-sed -i -E '/^src-git[[:space:]]+luci.*;openwrt-2/d' feeds.conf.default
-sed -i 's/^#\(.*luci\)/\1/' feeds.conf.default
+sed -i '/^src-git luci/d' feeds.conf.default
+echo 'src-git luci https://github.com/coolsnowwolf/luci' >> feeds.conf.default
 
 # Add a feed source
 #echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
