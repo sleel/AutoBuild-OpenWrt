@@ -10,7 +10,7 @@
 # See /LICENSE for more information.
 #
 
-name: AutoBuild-OpenWrt-NEWIFI3-5.4-1806
+name: AutoBuild-OpenWrt-MT7621-1806
 
 on:
   repository_dispatch:
