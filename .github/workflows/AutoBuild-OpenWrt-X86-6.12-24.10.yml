@@ -24,8 +24,8 @@ env:
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: istore-acc-new.config
-  DIY_P1_SH: diy-6.12-new.sh
-  DIY_P2_SH: diy-part2-new.sh
+  DIY_P1_SH: diy-6.12-2410.sh
+  DIY_P2_SH: diy-part2-2410.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
