@@ -23,11 +23,3 @@ ZZZ="package/lean/default-settings/files/zzz-default-settings"
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
 sed -i "s/LEDE /SEELE BUILT ON $(TZ=UTC-8 date "+%Y.%m.%d") @ LEDE /g" $ZZZ
 sed -i "s/hostname='LEDE'/hostname='NERV'/g" ./package/base-files/luci2/bin/config_generate
-# rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd*,miniupnpd-iptables,wireless-regdb}
-
-rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd*,miniupnpd-iptables,wireless-regdb,msd_lite,luci-app-msd_lite,luci-app-bypass,luci-app-passwall,luci-app-passwall2,luci-app-ssr-plus}
-rm -rf feeds/{packages/net/msd_lite,luci/applications/luci-app-msd_lite}
-git clone --depth=1 https://github.com/sleel/msd-lite-packages mypkgs
-cp -a mypkgs/msd_lite feeds/packages/net/msd_lite
-cp -a mypkgs/luci-app-msd_lite feeds/luci/applications/luci-app-msd_lite
-rm -rf mypkgs
