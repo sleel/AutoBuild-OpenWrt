@@ -10,7 +10,7 @@
 # See /LICENSE for more information.
 #
 
-name: AutoBuild-OpenWrt-MT7621-1806
+name: AutoBuild-OpenWrt-NEWIFI3-1806
 
 on:
   repository_dispatch:
@@ -23,8 +23,8 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: MT7621.config
-  DIY_P1_SH: MT7621.sh
+  CONFIG_FILE: NEWIFI3.config
+  DIY_P1_SH: NEWIFI3.sh
   DIY_P2_SH: diy-part2-1806.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
