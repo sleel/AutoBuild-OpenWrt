@@ -12,7 +12,7 @@
 
 ## 项目说明 [![](https://img.shields.io/badge/-项目基本介绍-FFFFFF.svg)](#项目说明-)
 - 固件来源：[![Lean](https://img.shields.io/badge/Lede-coolsnowwolf-ff69b4.svg?style=flat&logo=appveyor)](https://github.com/coolsnowwolf/lede),[![istoreOS](https://img.shields.io/badge/istoreOS-istoreOS-ff69b4.svg?style=flat&logo=appveyor)](https://github.com/istoreos) [![P3TERX](https://img.shields.io/badge/OpenWrt-P3TERX-blueviolet.svg?style=flat&logo=appveyor)](https://github.com/P3TERX/Actions-OpenWrt)
-- 项目使用 Github Actions 拉取 [Lean](https://github.com/coolsnowwolf/lede) 和[istoreOS](https://github.com/istoreos) 的 Openwrt 源码仓库进行云编译
+- 项目使用 Github Actions 拉取 [Lean](https://github.com/coolsnowwolf/lede) 和[istoreOS](https://github.com/istoreos) 的源码仓库进行云编译
 - 提供 NEWIFI D2 和 X86-64 平台的 Lean 源码编译的 OpenWrt 固件，并添加 iStore（软件商店）功能。
 
 
