@@ -20,6 +20,3 @@
 # Add a feed source
 #echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
-git clone https://github.com/sleel/mypkgs.git tmp_mypkgs
-mv tmp_mypkgs/* package/ && rm -rf tmp_mypkgs
-sed -i 's|include ../../luci.mk|include $(TOPDIR)/feeds/luci/luci.mk|' package/luci-app-msd_lite/Makefile
