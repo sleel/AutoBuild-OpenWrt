@@ -10,7 +10,7 @@
 # See /LICENSE for more information.
 #
 
-name: AutoBuild-OpenWrt-X86-6.6-1806
+name: AutoBuild-OpenWrt-X86-6.12-IPTV
 
 on:
   repository_dispatch:
@@ -24,8 +24,8 @@ env:
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: istore-1806.config
-  DIY_P1_SH: diy-6.6-1806.sh
-  DIY_P2_SH: diy-part2-1806.sh
+  DIY_P1_SH: diy-6.12-IPTV.sh
+  DIY_P2_SH: diy-part2-2410.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -125,7 +125,7 @@ jobs:
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: OpenWrt-X86-6.6-1806_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        name: OpenWrt-X86-6.12-IPTV_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
     - name: Generate release tag
@@ -143,7 +143,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: ${{ env.FILE_TIME }} 「 OpenWrt-X86-6.6-1806 」
+        name: ${{ env.FILE_TIME }} 「 OpenWrt-X86-6.12-IPTV 」
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
