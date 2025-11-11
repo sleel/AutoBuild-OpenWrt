@@ -19,7 +19,6 @@
 # Modify hostname
 #sed -i 's/OpenWrt/P3TERX-Router/g' package/base-files/files/bin/config_generate
 
-ZZZ="package/lean/default-settings/files/zzz-default-settings"
-sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ
-sed -i "s/LEDE /SEELE BUILT ON $(TZ=UTC-8 date "+%Y.%m.%d") @ LEDE /g" $ZZZ
+sed -i '/CYXluq4wUazHjmCDBCqXF/d' ./package/lean/default-settings/files/zzz-default-settings
+sed -i "s/LEDE /SEELE BUILT ON $(TZ=UTC-8 date "+%Y.%m.%d") @ LEDE /g" ./package/lean/default-settings/files/zzz-default-settings
 sed -i "s/hostname='LEDE'/hostname='NERV'/g" ./package/base-files/luci/bin/config_generate
