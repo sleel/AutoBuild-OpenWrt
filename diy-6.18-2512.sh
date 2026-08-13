@@ -11,14 +11,14 @@
 #
 
 # KERNEL_PATCHVER
-sed -i 's/^KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=6.12/' ./target/linux/x86/Makefile
+sed -i 's/^KERNEL_PATCHVER:=.*/KERNEL_PATCHVER:=6.18/' ./target/linux/x86/Makefile
 
 
 # Uncomment a feed source
 #sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
 sed -i '/^src-git luci/d' feeds.conf.default
 sed -i '/^src-git helloworld/d' feeds.conf.default
-sed -i '$a src-git luci https://github.com/coolsnowwolf/luci.git;openwrt-24.10' feeds.conf.default
+sed -i '$a src-git luci https://github.com/coolsnowwolf/luci.git;openwrt-25.12' feeds.conf.default
 
 # Add a feed source
 #echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
