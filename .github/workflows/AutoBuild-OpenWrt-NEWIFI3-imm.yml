@@ -24,7 +24,7 @@ env:
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: NEWIFI3-imm.config
-  DIY_P1_SH: NEWIFI3-imm.sh
+  DIY_P1_SH: diy-NEWIFI3-imm.sh
   DIY_P2_SH: diy-part2-NEWIFI3-imm.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
