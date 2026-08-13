@@ -10,7 +10,7 @@
 # See /LICENSE for more information.
 #
 
-name: AutoBuild-OpenWrt-X86-test
+name: AutoBuild-OpenWrt-X86-6.18-2512
 
 on:
   repository_dispatch:
@@ -24,8 +24,8 @@ env:
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: test.config
-  DIY_P1_SH: diy-test.sh
-  DIY_P2_SH: diy-part2-test.sh
+  DIY_P1_SH: diy-2512.sh
+  DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
