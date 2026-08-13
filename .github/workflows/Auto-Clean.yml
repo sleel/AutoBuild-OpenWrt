@@ -1,29 +1,38 @@
 name: Auto-Clean
 
 on:
-  #自动清理：每天早上6点
+  # 自动清理：每天早上6点 (北京时间)
 #  schedule:
 #    - cron: 0 22 * * *
-  #手动清理
+  # 手动清理
   workflow_dispatch:
     inputs:
       NUMBER:
+        description: '保留最新的 Release 数量 (默认: 0，即删除全部)'
         default: '0'
         required: false
         type: string
 
-permissions: write-all
+permissions:
+  contents: write  # 赋予删除 Release 和 Tag 的权限
+  actions: write   # 赋予删除 Workflow 运行记录的权限
 
 jobs:
   auto_clean:
     runs-on: ubuntu-22.04
     steps:
-      - name: Delete old Releases and Workflows
-        uses: ophub/delete-releases-workflows@main
+      - name: Delete old Releases and Tags
+        uses: dev-drprasad/delete-older-releases@v0.3.3
         with:
-          gh_token: ${{secrets.GITHUB_TOKEN}}
-          delete_releases: true
-          releases_keep_latest: ${{inputs.NUMBER || '0'}}
+          keep_latest: ${{ inputs.NUMBER || '0' }}
           delete_tags: true
-          delete_workflows: true
-          workflows_keep_day: 0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete old Workflows
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          retain_days: 0       # 0天前的全部删除
+          keep_minimum_runs: 0 # 不保留最低运行次数（删除全部记录，除当前正在运行的之外）
