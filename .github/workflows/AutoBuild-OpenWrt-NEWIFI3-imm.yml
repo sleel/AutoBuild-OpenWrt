@@ -23,9 +23,9 @@ env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: imm.config
-  DIY_P1_SH: imm.sh
-  DIY_P2_SH: diy-part2-imm.sh
+  CONFIG_FILE: NEWIFI3-imm.config
+  DIY_P1_SH: NEWIFI3-imm.sh
+  DIY_P2_SH: diy-part2-NEWIFI3-imm.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
