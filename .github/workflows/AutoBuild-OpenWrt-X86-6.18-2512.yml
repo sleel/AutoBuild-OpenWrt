@@ -1,7 +1,5 @@
 #
 # Based on: https://github.com/P3TERX/Actions-OpenWrt
-# File: .github/workflows/openwrt-builder.yml
-# Description: Build OpenWrt/ImmortalWrt/Lede using GitHub Actions
 #
 
 name: AutoBuild-OpenWrt-x86-6.18-2512
