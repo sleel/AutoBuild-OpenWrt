@@ -10,7 +10,7 @@
 # See /LICENSE for more information.
 #
 
-name: AutoBuild-OpenWrt-X86
+name: AutoBuild-OpenWrt-X86-6.12-2410
 
 on:
   repository_dispatch:
@@ -20,7 +20,7 @@ on:
 
 # 并发控制：最多一个 running 和一个 pending，避免由于重复触发造成资源挤兑或 Release 冲突
 concurrency:
-  group: openwrt-x86-6.12-build
+  group: openwrt-x86-6.12-2410-build
   cancel-in-progress: false
 
 env:
