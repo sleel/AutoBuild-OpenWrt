@@ -1,7 +1,7 @@
 #
 # https://github.com/P3TERX/Actions-OpenWrt
 #
-# File: .github/workflows/openwrt-bulder.yml
+# File: .github/workflows/openwrt-builder.yml
 # Description: Build OpenWrt using GitHub Actions
 #
 # Copyright (c) 2019-2024 P3TERX <https://p3terx.com>
@@ -10,13 +10,18 @@
 # See /LICENSE for more information.
 #
 
-name: AutoBuild-OpenWrt-X86-6.12-2410
+name: AutoBuild-OpenWrt-X86
 
 on:
   repository_dispatch:
   workflow_dispatch:
   schedule:
     - cron: 0 0 */10 * *
+
+# 并发控制：最多一个 running 和一个 pending，避免由于重复触发造成资源挤兑或 Release 冲突
+concurrency:
+  group: openwrt-x86-6.12-build
+  cancel-in-progress: false
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -33,6 +38,10 @@ env:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    # 显式权限声明：contents 用于 Release/Tag 管理，actions 用于清理 Workflow Runs
+    permissions:
+      contents: write
+      actions: write
 
     steps:
     - name: Checkout
@@ -49,25 +58,25 @@ jobs:
         sudo -E apt-get -qq clean
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
-        sudo chown $USER:$USER /workdir
+        sudo chown "$USER":"$USER" /workdir
 
     - name: Clone source code
       working-directory: /workdir
       run: |
-        df -hT $PWD
-        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        df -hT "$PWD"
+        git clone "$REPO_URL" -b "$REPO_BRANCH" openwrt
         cd openwrt
-        echo "SOURCE_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
-        echo "SOURCE_COMMIT_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-        echo "SOURCE_COMMIT_DATE=$(git show -s --format=%ci HEAD)" >> $GITHUB_ENV
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        echo "SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+        echo "SOURCE_COMMIT_SHORT=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+        echo "SOURCE_COMMIT_DATE=$(git show -s --format=%ci HEAD)" >> "$GITHUB_ENV"
+        ln -sf /workdir/openwrt "$GITHUB_WORKSPACE"/openwrt
 
     - name: Load custom feeds
       run: |
-        [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-        chmod +x $DIY_P1_SH
+        [ -e "$FEEDS_CONF" ] && mv "$FEEDS_CONF" openwrt/feeds.conf.default
+        chmod +x "$DIY_P1_SH"
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P1_SH
+        "$GITHUB_WORKSPACE/$DIY_P1_SH"
 
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
@@ -78,10 +87,10 @@ jobs:
     - name: Load custom configuration
       run: |
         [ -e files ] && mv files openwrt/files
-        [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-        chmod +x $DIY_P2_SH
+        [ -e "$CONFIG_FILE" ] && mv "$CONFIG_FILE" openwrt/.config
+        chmod +x "$DIY_P2_SH"
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P2_SH
+        "$GITHUB_WORKSPACE/$DIY_P2_SH"
 
     - name: Download package
       id: package
@@ -89,9 +98,9 @@ jobs:
         cd openwrt
         make defconfig
         
-        # 记录最终 .config 的 hash
+        # 记录编译前的最终配置 Hash
         CONFIG_SHA256=$(sha256sum .config | awk '{print $1}')
-        echo "CONFIG_SHA256=$CONFIG_SHA256" >> $GITHUB_ENV
+        echo "CONFIG_SHA256=$CONFIG_SHA256" >> "$GITHUB_ENV"
         
         make download -j8
         find dl -type f -size -1024c -print -delete
@@ -101,12 +110,25 @@ jobs:
       run: |
         cd openwrt
         echo -e "$(nproc) thread compile"
+        # 失败回退机制：多线程编译失败时，自动切换为单线程并输出详细日志
         make -j$(nproc) || make -j1 V=s
-        echo "status=success" >> $GITHUB_OUTPUT
+        echo "status=success" >> "$GITHUB_OUTPUT"
+        
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
-        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-        echo "FILE_TIME=$(date "+%Y年%m月%d日-%H点")" >> $GITHUB_ENV
+        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> "$GITHUB_ENV"
+        
+        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> "$GITHUB_ENV"
+        echo "FILE_TIME=$(date "+%Y年%m月%d日-%H点")" >> "$GITHUB_ENV"
+        
+        # 动态提取内核及源码版本标识
+        KERNEL_VER=$(awk -F= '/^KERNEL_PATCHVER:=/ {print $2; exit}' target/linux/x86/Makefile)
+        KERNEL_VER=${KERNEL_VER:-6.x}
+        
+        LUCI_VER=$(grep -Po "DISTRIB_REVISION='\K[^']*" package/lean/default-settings/files/zzz-default-settings | head -n1)
+        LUCI_VER=${LUCI_VER:-luci}
+        
+        echo "KERNEL_VER=$KERNEL_VER" >> "$GITHUB_ENV"
+        echo "LUCI_VER=$LUCI_VER" >> "$GITHUB_ENV"
 
     - name: Check space usage
       if: (!cancelled())
@@ -127,59 +149,70 @@ jobs:
         rm -rf packages
         
         DATE_STR=$(date +"%Y%m%d")
-        
-        # 开启 nullglob 避免 glob 未匹配到文件时展开为字面量
         shopt -s nullglob
         
-        # 精确匹配三大类固件文件
         for file in *.img.gz *.tar.gz *.bin; do
           if [ -f "$file" ]; then
-            new_name="${DATE_STR}-${file}"
+            # 拼接动态版本标识并重命名固件
+            modified_file="${file//x86-64/${KERNEL_VER}-${LUCI_VER}}"
+            new_name="${DATE_STR}-${modified_file}"
             mv -- "$file" "$new_name"
             
-            # 安全转义正则表达式中的点，并锁定行尾，实现100%精准替换
+            # 保留 sha256sums 原有格式，仅替换对应文件名
             if [ -f sha256sums ]; then
-              escaped_file="${file//./\.}"
-              sed -i "s#${escaped_file}\$#${new_name}#g" sha256sums
+              awk -v old="$file" -v new="$new_name" '
+              {
+                  if ($NF == old) {
+                      prefix = substr($0, 1, length($0) - length(old))
+                      print prefix new
+                  } else {
+                      print
+                  }
+              }' sha256sums > sha256sums.tmp && mv sha256sums.tmp sha256sums
             fi
           fi
         done
         
-        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "status=success" >> $GITHUB_OUTPUT
+        echo "FIRMWARE=$PWD" >> "$GITHUB_ENV"
+        echo "status=success" >> "$GITHUB_OUTPUT"
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@v4
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
-        name: OpenWrt-X86-6.12-2410_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        name: OpenWrt-X86-${{ env.KERNEL_VER }}-${{ env.LUCI_VER }}_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
     - name: Generate release tag
       id: tag
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      # 严格要求前置所有流程成功，才生成 Release Tag
+      if: env.UPLOAD_RELEASE == 'true' && success()
       run: |
-        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> "$GITHUB_OUTPUT"
         echo "Source: $REPO_URL" >> release.txt
         echo "Branch: $REPO_BRANCH" >> release.txt
         echo "Commit: $SOURCE_COMMIT" >> release.txt
         echo "Commit Date: $SOURCE_COMMIT_DATE" >> release.txt
         echo "Config SHA256: $CONFIG_SHA256" >> release.txt
-        echo "status=success" >> $GITHUB_OUTPUT
+        echo "status=success" >> "$GITHUB_OUTPUT"
 
     - name: Upload firmware to release
       uses: softprops/action-gh-release@v2
-      if: steps.tag.outputs.status == 'success' && !cancelled()
+      if: steps.tag.outputs.status == 'success' && success()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: ${{ env.FILE_TIME }} 「 OpenWrt-X86-6.12-2410 」 [${{ env.SOURCE_COMMIT_SHORT }}]
+        name: ${{ env.FILE_TIME }} 「 OpenWrt-X86-${{ env.KERNEL_VER }}-${{ env.LUCI_VER }} 」 [${{ env.SOURCE_COMMIT_SHORT }}]
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
+        # 空目录强校验，确保 Release 资产完整
+        fail_on_unmatched_files: true
         files: ${{ env.FIRMWARE }}/*
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2
+      # 只有在全部构建和发布都成功时，才清理历史流水线记录
+      if: success()
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         repository: ${{ github.repository }}
@@ -188,7 +221,8 @@ jobs:
 
     - name: Remove old Releases
       uses: dev-drprasad/delete-older-releases@v0.3.3
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      # 只有当本次构建确定成功后，才执行旧数据清理
+      if: env.UPLOAD_RELEASE == 'true' && success()
       with:
         keep_latest: 99
         delete_tags: true
