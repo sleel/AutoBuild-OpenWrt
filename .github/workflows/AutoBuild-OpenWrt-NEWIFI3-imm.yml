@@ -1,13 +1,5 @@
 #
-# https://github.com/P3TERX/Actions-OpenWrt
-#
-# File: .github/workflows/openwrt-builder.yml
-# Description: Build OpenWrt using GitHub Actions
-#
-# Copyright (c) 2019-2024 P3TERX <https://p3terx.com>
-#
-# This is free software, licensed under the MIT License.
-# See /LICENSE for more information.
+# Based on: https://github.com/P3TERX/Actions-OpenWrt
 #
 
 name: AutoBuild-OpenWrt-Newifi3
@@ -16,9 +8,8 @@ on:
   repository_dispatch:
   workflow_dispatch:
   schedule:
-    - cron: 0 0 */10 * *
+    - cron: "7 0 */10 * *"
 
-# 并发控制：最多一个 running 和一个 pending，避免由于重复触发造成资源挤兑或 Release 冲突
 concurrency:
   group: openwrt-Newifi3-build
   cancel-in-progress: false
@@ -38,7 +29,9 @@ env:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    # 显式权限声明：contents 用于 Release/Tag 管理，actions 用于清理 Workflow Runs
+    # 编译加下载正常约 30-90 分钟，240 分钟给足余量；避免异常挂死时
+    # 白白空转到 GitHub 默认的 6 小时上限才被强制取消，浪费 Actions 分钟数
+    timeout-minutes: 240
     permissions:
       contents: write
       actions: write
@@ -63,17 +56,18 @@ jobs:
     - name: Clone source code
       working-directory: /workdir
       run: |
-        df -hT "$PWD"
-        git clone "$REPO_URL" -b "$REPO_BRANCH" openwrt
+        set -euo pipefail
+        git clone "$REPO_URL" -b "$REPO_BRANCH" --depth=1 openwrt
         cd openwrt
-        echo "SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
         echo "SOURCE_COMMIT_SHORT=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
-        echo "SOURCE_COMMIT_DATE=$(git show -s --format=%ci HEAD)" >> "$GITHUB_ENV"
         ln -sf /workdir/openwrt "$GITHUB_WORKSPACE"/openwrt
 
     - name: Load custom feeds
       run: |
-        [ -e "$FEEDS_CONF" ] && mv "$FEEDS_CONF" openwrt/feeds.conf.default
+        set -euo pipefail
+        if [ -e "$FEEDS_CONF" ]; then
+          mv "$FEEDS_CONF" openwrt/feeds.conf.default
+        fi
         chmod +x "$DIY_P1_SH"
         cd openwrt
         "$GITHUB_WORKSPACE/$DIY_P1_SH"
@@ -86,114 +80,149 @@ jobs:
 
     - name: Load custom configuration
       run: |
-        [ -e files ] && mv files openwrt/files
-        [ -e "$CONFIG_FILE" ] && mv "$CONFIG_FILE" openwrt/.config
+        set -euo pipefail
+        if [ -e files ]; then
+          mv files openwrt/files
+        fi
+        if [ -e "$CONFIG_FILE" ]; then
+          mv "$CONFIG_FILE" openwrt/.config
+        fi
         chmod +x "$DIY_P2_SH"
         cd openwrt
         "$GITHUB_WORKSPACE/$DIY_P2_SH"
 
-    - name: Download package
-      id: package
+    - name: Generate config hash
       run: |
+        set -euo pipefail
         cd openwrt
         make defconfig
-        
-        # 记录编译前的最终配置 Hash
         CONFIG_SHA256=$(sha256sum .config | awk '{print $1}')
         echo "CONFIG_SHA256=$CONFIG_SHA256" >> "$GITHUB_ENV"
-        
+
+    - name: Cache downloaded packages
+      uses: actions/cache@v4
+      with:
+        path: openwrt/dl
+        key: dl-${{ env.CONFIG_SHA256 }}
+        restore-keys: |
+          dl-
+
+    - name: Download package
+      run: |
+        set -euo pipefail
+        cd openwrt
         make download -j8
         find dl -type f -size -1024c -print -delete
 
     - name: Compile the firmware
       id: compile
       run: |
+        # 此处不能用 set -e，因为需要手动捕获 make 的失败并做单线程回退
+        set -uo pipefail
         cd openwrt
-        echo -e "$(nproc) thread compile"
-        # 失败回退机制：多线程编译失败时，自动切换为单线程并输出详细日志
-        make -j$(nproc) || make -j1 V=s
+        BUILD_OK=0
+        if make -j"$(nproc)"; then BUILD_OK=1; elif make -j1 V=s; then BUILD_OK=1; fi
+        if [ "$BUILD_OK" -ne 1 ]; then
+          echo "status=failure" >> "$GITHUB_OUTPUT"
+          exit 1
+        fi
         echo "status=success" >> "$GITHUB_OUTPUT"
-        
-        grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-        [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> "$GITHUB_ENV"
-        
+
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> "$GITHUB_ENV"
         echo "FILE_TIME=$(date "+%Y年%m月%d日-%H点")" >> "$GITHUB_ENV"
-        
-        # 动态提取内核及源码版本标识
-        KERNEL_VER=$(awk -F= '/^KERNEL_PATCHVER:=/ {print $2; exit}' target/linux/x86/Makefile)
-        KERNEL_VER=${KERNEL_VER:-6.x}
-        
-        LUCI_VER=$(grep -Po "DISTRIB_REVISION='\K[^']*" package/lean/default-settings/files/zzz-default-settings | head -n1)
-        LUCI_VER=${LUCI_VER:-luci}
-        
+
+        # --- 内核版本：大版本号 + 小版本号 ---
+        BOARD=$(awk -F'"' '/^CONFIG_TARGET_BOARD=/ {print $2}' .config)
+        SUBTARGET=$(awk -F'"' '/^CONFIG_TARGET_SUBTARGET=/ {print $2}' .config)
+
+        MK=""
+        if [ -n "$BOARD" ] && [ -n "$SUBTARGET" ] && [ -f "target/linux/${BOARD}/${SUBTARGET}/Makefile" ]; then
+          MK="target/linux/${BOARD}/${SUBTARGET}/Makefile"
+        elif [ -n "$BOARD" ] && [ -f "target/linux/${BOARD}/Makefile" ]; then
+          MK="target/linux/${BOARD}/Makefile"
+        fi
+
+        KVER=""
+        if [ -n "$MK" ]; then
+          if grep -q '^CONFIG_TESTING_KERNEL=y' .config; then
+            KVER=$(awk -F':=' '/^KERNEL_TESTING_PATCHVER:=/{print $2;exit}' "$MK" | tr -d '[:space:]')
+          fi
+          if [ -z "$KVER" ]; then
+            KVER=$(awk -F':=' '/^KERNEL_PATCHVER:=/{print $2;exit}' "$MK" | tr -d '[:space:]')
+          fi
+        fi
+        KVER=${KVER:-unknown}
+
+        # 补丁号：openwrt/immortalwrt 用新结构 target/linux/generic/kernel-<KVER>，
+        # coolsnowwolf/lede 尚未迁移，仍用旧结构 include/kernel-<KVER>。两条都试。
+        PATCH=""
+        if [ "$KVER" != "unknown" ]; then
+          for CANDIDATE in "target/linux/generic/kernel-${KVER}" "include/kernel-${KVER}"; do
+            if [ -f "$CANDIDATE" ]; then
+              PATCH=$(awk -F'=' -v k="$KVER" '$0 ~ "^LINUX_VERSION-"k"[[:space:]]*=" {print $2;exit}' "$CANDIDATE" | tr -d '[:space:]')
+              [ -n "$PATCH" ] && break
+            fi
+          done
+        fi
+
+        KERNEL_VER="${KVER}${PATCH}"
         echo "KERNEL_VER=$KERNEL_VER" >> "$GITHUB_ENV"
+
+        # --- LuCI 版本：分支追踪号 + feeds/luci 实际 commit ---
+        LINE=$(grep -m1 -E '^src-git[[:space:]]+luci[[:space:]]' feeds.conf.default 2>/dev/null || true)
+        TRACK=""
+        if echo "$LINE" | grep -q ';openwrt-'; then
+          TRACK=$(echo "$LINE" | sed -E 's/.*;openwrt-([0-9.]+).*/\1/' | tr -d '.')
+        fi
+        [ -z "$TRACK" ] && TRACK="master"
+        LUCI_COMMIT=$(git -C feeds/luci rev-parse --short HEAD 2>/dev/null)
+        LUCI_VER="${TRACK}.${LUCI_COMMIT:-unknown}"
         echo "LUCI_VER=$LUCI_VER" >> "$GITHUB_ENV"
+
+        echo "Kernel: $KERNEL_VER (base=$KVER patch=$PATCH via ${MK:-N/A}) | LuCI: $LUCI_VER (line: ${LINE:-none}) | Commit: $SOURCE_COMMIT_SHORT"
 
     - name: Check space usage
       if: (!cancelled())
       run: df -hT
 
-    - name: Upload bin directory
-      uses: actions/upload-artifact@v4
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
-      with:
-        name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: openwrt/bin
-
     - name: Organize files
       id: organize
-      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
+        set -euo pipefail
         cd openwrt/bin/targets/*/*
         rm -rf packages
-        
         DATE_STR=$(date +"%Y%m%d")
         shopt -s nullglob
-        
+        FOUND=0
         for file in *.img.gz *.tar.gz *.bin; do
-          if [ -f "$file" ]; then
-            # 拼接动态版本标识并重命名固件
-            modified_file="${file//x86-64/${KERNEL_VER}-${LUCI_VER}}"
-            new_name="${DATE_STR}-${modified_file}"
-            mv -- "$file" "$new_name"
-            
-            # 保留 sha256sums 原有格式，仅替换对应文件名
-            if [ -f sha256sums ]; then
-              awk -v old="$file" -v new="$new_name" '
-              {
-                  if ($NF == old) {
-                      prefix = substr($0, 1, length($0) - length(old))
-                      print prefix new
-                  } else {
-                      print
-                  }
-              }' sha256sums > sha256sums.tmp && mv sha256sums.tmp sha256sums
-            fi
+          [ -f "$file" ] || continue
+          FOUND=1
+          new_name="${DATE_STR}-$(echo "$file" | sed -E "s/^(openwrt|immortalwrt|lede)-/\1-${KERNEL_VER}-luci${LUCI_VER}-/")"
+          mv -- "$file" "$new_name"
+          if [ -f sha256sums ]; then
+            awk -v old="$file" -v new="$new_name" '{if($NF==old){print substr($0,1,length($0)-length(old)) new}else{print}}' sha256sums > t && mv t sha256sums
           fi
         done
-        
+        if [ "$FOUND" -eq 0 ]; then
+          echo "::error::No firmware found."
+          exit 1
+        fi
         echo "FIRMWARE=$PWD" >> "$GITHUB_ENV"
         echo "status=success" >> "$GITHUB_OUTPUT"
 
-    - name: Upload firmware directory
-      uses: actions/upload-artifact@v4
-      if: steps.organize.outputs.status == 'success' && !cancelled()
-      with:
-        name: OpenWrt-Newifi3-${{ env.KERNEL_VER }}-${{ env.LUCI_VER }}_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: ${{ env.FIRMWARE }}
-
     - name: Generate release tag
       id: tag
-      # 严格要求前置所有流程成功，才生成 Release Tag
       if: env.UPLOAD_RELEASE == 'true' && success()
       run: |
-        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> "$GITHUB_OUTPUT"
-        echo "Source: $REPO_URL" >> release.txt
-        echo "Branch: $REPO_BRANCH" >> release.txt
-        echo "Commit: $SOURCE_COMMIT" >> release.txt
-        echo "Commit Date: $SOURCE_COMMIT_DATE" >> release.txt
-        echo "Config SHA256: $CONFIG_SHA256" >> release.txt
+        set -euo pipefail
+        {
+          echo "Kernel: $KERNEL_VER"
+          echo "LuCI: $LUCI_VER"
+          echo "Commit: $SOURCE_COMMIT_SHORT"
+          echo "Config SHA256: $CONFIG_SHA256"
+        } >> release.txt
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")-${SOURCE_COMMIT_SHORT}" >> "$GITHUB_OUTPUT"
         echo "status=success" >> "$GITHUB_OUTPUT"
 
     - name: Upload firmware to release
@@ -202,16 +231,14 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: ${{ env.FILE_TIME }} 「 OpenWrt-Newifi3-${{ env.KERNEL_VER }}-${{ env.LUCI_VER }} 」 [${{ env.SOURCE_COMMIT_SHORT }}]
+        name: ${{ env.FILE_TIME }} 「 OpenWrt-x86-${{ env.KERNEL_VER }}-luci${{ env.LUCI_VER }} 」
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
-        # 空目录强校验，确保 Release 资产完整
         fail_on_unmatched_files: true
         files: ${{ env.FIRMWARE }}/*
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2
-      # 只有在全部构建和发布都成功时，才清理历史流水线记录
       if: success()
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -221,7 +248,6 @@ jobs:
 
     - name: Remove old Releases
       uses: dev-drprasad/delete-older-releases@v0.3.3
-      # 只有当本次构建确定成功后，才执行旧数据清理
       if: env.UPLOAD_RELEASE == 'true' && success()
       with:
         keep_latest: 99
