@@ -29,7 +29,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    # 编译加下载正常约 30-90 分钟，180 分钟给足余量；避免异常挂死时
+    # 编译加下载正常约 30-90 分钟，240 分钟给足余量；避免异常挂死时
     # 白白空转到 GitHub 默认的 6 小时上限才被强制取消，浪费 Actions 分钟数
     timeout-minutes: 240
     permissions:
