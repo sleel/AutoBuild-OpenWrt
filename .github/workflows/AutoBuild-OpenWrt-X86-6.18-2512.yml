@@ -2,7 +2,7 @@
 # Based on: https://github.com/P3TERX/Actions-OpenWrt
 #
 
-name: AutoBuild-OpenWrt-x86-6.18-2512
+name: AutoBuild-OpenWrt-6.18-2512
 
 on:
   repository_dispatch:
@@ -11,7 +11,7 @@ on:
     - cron: "7 0 */10 * *"
 
 concurrency:
-  group: openwrt-x86-6.18-2512-build
+  group: openwrt-6.18-2512-build
   cancel-in-progress: false
 
 env:
