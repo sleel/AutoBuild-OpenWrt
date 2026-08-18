@@ -17,7 +17,7 @@
 ## 📖 项目说明
 
 <p>
-<a href="https://github.com/immortalwrt/immortalwrt"><img src="https://img.shields.io/badge/immortalwrt-ff69b4.svg?style=flat&logo=appveyor" alt="immortalwrt"></a>
+<a href="https://github.com/immortalwrt/immortalwrt"><img src="https://img.shields.io/badge/immortalwrt-immortalwrt-ff69b4.svg?style=flat&logo=appveyor" alt="immortalwrt"></a>
 <a href="https://github.com/coolsnowwolf/lede"><img src="https://img.shields.io/badge/Lede-coolsnowwolf-ff69b4.svg?style=flat&logo=appveyor" alt="Lean"></a>
 <a href="https://github.com/istoreos"><img src="https://img.shields.io/badge/istoreOS-istoreOS-ff69b4.svg?style=flat&logo=appveyor" alt="istoreOS"></a>
 <a href="https://github.com/P3TERX/Actions-OpenWrt"><img src="https://img.shields.io/badge/OpenWrt-P3TERX-blueviolet.svg?style=flat&logo=appveyor" alt="P3TERX"></a>
