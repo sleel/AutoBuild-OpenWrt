@@ -29,8 +29,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    # 编译加下载正常约 30-90 分钟，240 分钟给足余量；避免异常挂死时
-    # 白白空转到 GitHub 默认的 6 小时上限才被强制取消，浪费 Actions 分钟数
     timeout-minutes: 240
     permissions:
       contents: write
@@ -102,7 +100,8 @@ jobs:
     - name: Cache downloaded packages
       uses: actions/cache@v4
       with:
-        path: openwrt/dl
+        # 用绝对路径，绕开 openwrt 软链接，避免缓存还原时的不确定性
+        path: /workdir/openwrt/dl
         key: dl-${{ env.CONFIG_SHA256 }}
         restore-keys: |
           dl-
@@ -117,8 +116,7 @@ jobs:
     - name: Compile the firmware
       id: compile
       run: |
-        # 此处不能用 set -e，因为需要手动捕获 make 的失败并做单线程回退
-        set -uo pipefail
+        set -uo pipefail   # 不用 -e：需手动捕获 make 失败并做单线程回退
         cd openwrt
         BUILD_OK=0
         if make -j"$(nproc)"; then BUILD_OK=1; elif make -j1 V=s; then BUILD_OK=1; fi
@@ -128,20 +126,29 @@ jobs:
         fi
         echo "status=success" >> "$GITHUB_OUTPUT"
 
-        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> "$GITHUB_ENV"
-        echo "FILE_TIME=$(date "+%Y年%m月%d日-%H点")" >> "$GITHUB_ENV"
-
-        # --- 内核版本：大版本号 + 小版本号 ---
+        # 设备标识：BOARD-DEVICE_NAME，取不到则退化为 BOARD
+        # DEVICE_NAME 必须初始化为空串，否则 set -u 下未命中 grep 会导致 unbound variable
+        DEVICE_NAME=""
         BOARD=$(awk -F'"' '/^CONFIG_TARGET_BOARD=/ {print $2}' .config)
         SUBTARGET=$(awk -F'"' '/^CONFIG_TARGET_SUBTARGET=/ {print $2}' .config)
+        if grep -q '^CONFIG_TARGET.*DEVICE.*=y' .config; then
+          DEVICE_NAME=$(grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' | head -n1)
+        fi
+        if [ -n "$BOARD" ] && [ -n "$DEVICE_NAME" ]; then
+          PLATFORM="${BOARD}-${DEVICE_NAME}"
+        elif [ -n "$DEVICE_NAME" ]; then
+          PLATFORM="$DEVICE_NAME"
+        else
+          PLATFORM="${BOARD:-unknown}"
+        fi
 
+        # 内核大版本：处理 CONFIG_TESTING_KERNEL 覆盖（开启时实际用 KERNEL_TESTING_PATCHVER）
         MK=""
         if [ -n "$BOARD" ] && [ -n "$SUBTARGET" ] && [ -f "target/linux/${BOARD}/${SUBTARGET}/Makefile" ]; then
           MK="target/linux/${BOARD}/${SUBTARGET}/Makefile"
         elif [ -n "$BOARD" ] && [ -f "target/linux/${BOARD}/Makefile" ]; then
           MK="target/linux/${BOARD}/Makefile"
         fi
-
         KVER=""
         if [ -n "$MK" ]; then
           if grep -q '^CONFIG_TESTING_KERNEL=y' .config; then
@@ -153,8 +160,8 @@ jobs:
         fi
         KVER=${KVER:-unknown}
 
-        # 补丁号：openwrt/immortalwrt 用新结构 target/linux/generic/kernel-<KVER>，
-        # coolsnowwolf/lede 尚未迁移，仍用旧结构 include/kernel-<KVER>。两条都试。
+        # 内核补丁号：新结构 target/linux/generic/kernel-<KVER>（openwrt/immortalwrt），
+        # 旧结构 include/kernel-<KVER>（lede 尚未迁移），两条都试
         PATCH=""
         if [ "$KVER" != "unknown" ]; then
           for CANDIDATE in "target/linux/generic/kernel-${KVER}" "include/kernel-${KVER}"; do
@@ -164,11 +171,11 @@ jobs:
             fi
           done
         fi
-
         KERNEL_VER="${KVER}${PATCH}"
-        echo "KERNEL_VER=$KERNEL_VER" >> "$GITHUB_ENV"
 
-        # --- LuCI 版本：分支追踪号 + feeds/luci 实际 commit ---
+        # LuCI 版本：分支追踪号(feeds.conf.default) + 实际 commit(feeds/luci)
+        # lede 带 ;openwrt-XX.XX 后缀，immortalwrt/官方 openwrt 不带；
+        # 先 grep 判断避免 sed 无匹配时原样吐出整行污染 TRACK
         LINE=$(grep -m1 -E '^src-git[[:space:]]+luci[[:space:]]' feeds.conf.default 2>/dev/null || true)
         TRACK=""
         if echo "$LINE" | grep -q ';openwrt-'; then
@@ -177,9 +184,16 @@ jobs:
         [ -z "$TRACK" ] && TRACK="master"
         LUCI_COMMIT=$(git -C feeds/luci rev-parse --short HEAD 2>/dev/null)
         LUCI_VER="${TRACK}.${LUCI_COMMIT:-unknown}"
-        echo "LUCI_VER=$LUCI_VER" >> "$GITHUB_ENV"
 
-        echo "Kernel: $KERNEL_VER (base=$KVER patch=$PATCH via ${MK:-N/A}) | LuCI: $LUCI_VER (line: ${LINE:-none}) | Commit: $SOURCE_COMMIT_SHORT"
+        {
+          echo "FILE_DATE=_$(date +"%Y%m%d%H%M")"
+          echo "FILE_TIME=$(date "+%Y年%m月%d日-%H点")"
+          echo "PLATFORM=$PLATFORM"
+          echo "KERNEL_VER=$KERNEL_VER"
+          echo "LUCI_VER=$LUCI_VER"
+        } >> "$GITHUB_ENV"
+
+        echo "Platform: $PLATFORM | Kernel: $KERNEL_VER (base=$KVER patch=$PATCH via ${MK:-N/A}) | LuCI: $LUCI_VER | Commit: $SOURCE_COMMIT_SHORT"
 
     - name: Check space usage
       if: (!cancelled())
@@ -217,6 +231,9 @@ jobs:
       run: |
         set -euo pipefail
         {
+          echo "Source: $REPO_URL"
+          echo "Branch: $REPO_BRANCH"
+          echo "Platform: $PLATFORM"
           echo "Kernel: $KERNEL_VER"
           echo "LuCI: $LUCI_VER"
           echo "Commit: $SOURCE_COMMIT_SHORT"
@@ -231,7 +248,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: ${{ env.FILE_TIME }} 「 OpenWrt-x86-${{ env.KERNEL_VER }}-luci${{ env.LUCI_VER }} 」
+        name: ${{ env.FILE_TIME }} 「 OpenWrt-${{ env.PLATFORM }}-${{ env.KERNEL_VER }}-luci${{ env.LUCI_VER }} 」
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
         fail_on_unmatched_files: true
