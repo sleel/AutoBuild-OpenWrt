@@ -25,7 +25,7 @@
 
 - **固件来源**：基于 [immortalwrt OpenWrt](https://github.com/immortalwrt/immortalwrt) [Lean's OpenWrt](https://github.com/coolsnowwolf/lede) 与 [istoreOS](https://github.com/istoreos) 源码
 - **编译方式**：使用 GitHub Actions 拉取源码仓库进行云端自动编译
-- **支持平台**：`Newifi D2` 与 `X86-64`，编译产物基于 immortalwrt 与 Lean 源码，并集成 **iStore**（软件商店）功能
+- **支持平台**：`X86-64` 与 `Newifi D2`，编译产物基于 Lean 与 immortalwrt 源码，并集成 **iStore**（软件商店）功能
 
 ## 📦 固件下载
 
