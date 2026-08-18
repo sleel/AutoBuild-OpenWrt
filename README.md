@@ -54,8 +54,3 @@
 ## 📄 License
 
 本项目基于 [MIT](https://github.com/sleel/OpenWrt/blob/main/LICENSE) 协议开源。
-
-[⬆️ 回到顶部](#-actions-openwrt)
-
-</div>
-</content>
