@@ -29,9 +29,6 @@
 
 ## 📦 固件下载
 
-> [!TIP]
-> 点击下表中的下载徽章 [![](https://img.shields.io/badge/下载-链接-blueviolet.svg?style=flat&logo=hack-the-box)](https://github.com/sleel/AutoBuild-OpenWrt/releases) 即可跳转至对应设备的固件下载页面。
-
 | 平台 / 设备 | 编译状态 | 配置文件 | 固件下载 |
 | :---: | :---: | :---: | :---: |
 | [![Newifi D2 immortalwrt](https://img.shields.io/badge/NewifiD2-immortalwrt-32C955.svg?logo=openwrt)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/.github/workflows/AutoBuild-OpenWrt-Newifi3.yml) | [![](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-Newifi3.yml/badge.svg)](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-Newifi3.yml) | [![配置文件](https://img.shields.io/badge/编译-配置-orange.svg?logo=apache-spark)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/Newifi3.config) | [![下载链接](https://img.shields.io/badge/下载-链接-blueviolet.svg?logo=hack-the-box)](https://github.com/sleel/AutoBuild-OpenWrt/releases?q=Newifi3&expanded=true) |
