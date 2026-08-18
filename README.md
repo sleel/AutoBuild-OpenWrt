@@ -1,30 +1,44 @@
 **中文** | [上游源代码](https://github.com/P3TERX/Actions-OpenWrt)
 
 <div align="center">
-<h1>Actions-OpenWrt(多设备固件云编译)</h1>
+
+<h1>Actions-OpenWrt</h1>
+<h3>多设备固件云编译</h3>
 
 [![LICENSE](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square&label=LICENSE)](https://github.com/sleel/Actions-OpenWrt/blob/main/LICENSE)
-![GitHub Stars](https://img.shields.io/github/stars/sleel/AutoBuild-OpenWrt.svg?style=flat-square&label=Stars&logo=github)
-![GitHub Forks](https://img.shields.io/github/forks/sleel/AutoBuild-OpenWrt.svg?style=flat-square&label=Forks&logo=github)
-![GitHub download](https://img.shields.io/github/downloads/sleel/AutoBuild-OpenWrt/total.svg?style=flat-square&label=Download&logo=github)
+[![GitHub Stars](https://img.shields.io/github/stars/sleel/AutoBuild-OpenWrt.svg?style=flat-square&label=Stars&logo=github)](https://github.com/sleel/AutoBuild-OpenWrt/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/sleel/AutoBuild-OpenWrt.svg?style=flat-square&label=Forks&logo=github)](https://github.com/sleel/AutoBuild-OpenWrt/network/members)
+[![GitHub Download](https://img.shields.io/github/downloads/sleel/AutoBuild-OpenWrt/total.svg?style=flat-square&label=Download&logo=github)](https://github.com/sleel/AutoBuild-OpenWrt/releases)
+
 </div>
 
+---
 
-## 项目说明 [![](https://img.shields.io/badge/-项目基本介绍-FFFFFF.svg)](#项目说明-)
-- 固件来源：[![Lean](https://img.shields.io/badge/Lede-coolsnowwolf-ff69b4.svg?style=flat&logo=appveyor)](https://github.com/coolsnowwolf/lede),[![istoreOS](https://img.shields.io/badge/istoreOS-istoreOS-ff69b4.svg?style=flat&logo=appveyor)](https://github.com/istoreos) [![P3TERX](https://img.shields.io/badge/OpenWrt-P3TERX-blueviolet.svg?style=flat&logo=appveyor)](https://github.com/P3TERX/Actions-OpenWrt)
-- 项目使用 Github Actions 拉取 [Lean](https://github.com/coolsnowwolf/lede) 和[istoreOS](https://github.com/istoreos) 的源码仓库进行云编译
-- 提供 NEWIFI D2 和 X86-64 平台的 Lean 源码编译的 OpenWrt 固件，并添加 iStore（软件商店）功能。
+## 项目说明
 
+<p>
+<a href="https://github.com/coolsnowwolf/lede"><img src="https://img.shields.io/badge/Lede-coolsnowwolf-ff69b4.svg?style=flat&logo=appveyor" alt="Lean"></a>
+<a href="https://github.com/istoreos"><img src="https://img.shields.io/badge/istoreOS-istoreOS-ff69b4.svg?style=flat&logo=appveyor" alt="istoreOS"></a>
+<a href="https://github.com/P3TERX/Actions-OpenWrt"><img src="https://img.shields.io/badge/OpenWrt-P3TERX-blueviolet.svg?style=flat&logo=appveyor" alt="P3TERX"></a>
+</p>
 
-## 固件下载 [![](https://img.shields.io/badge/-编译状态及下载链接-FFFFFF.svg)](#固件下载-)
-点击下表中 [![](https://img.shields.io/badge/下载-链接-blueviolet.svg?style=flat&logo=hack-the-box)](https://github.com/sleel/AutoBuild-OpenWrt/releases) 即可跳转到该设备固件下载页面
-| 平台+设备名称 | 固件编译状态 | 配置文件 | 固件下载 |
-| :-------------: | :-------------: | :-------------: | :-------------: |
+- **固件来源**：基于 [Lean's OpenWrt](https://github.com/coolsnowwolf/lede) 与 [istoreOS](https://github.com/istoreos) 源码
+- **编译方式**：使用 GitHub Actions 拉取源码仓库进行云端自动编译
+- **支持平台**：`NEWIFI D2` 与 `X86-64`，编译产物基于 Lean 源码，并集成 **iStore**（软件商店）功能
+
+## 固件下载
+
+> 点击下表中的下载徽章 [![](https://img.shields.io/badge/下载-链接-blueviolet.svg?style=flat&logo=hack-the-box)](https://github.com/sleel/AutoBuild-OpenWrt/releases) 即可跳转至对应设备的固件下载页面。
+
+| 平台 / 设备 | 编译状态 | 配置文件 | 固件下载 |
+| :---: | :---: | :---: | :---: |
 | [![](https://img.shields.io/badge/NewifiD2-immortalwrt-32C955.svg?logo=openwrt)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/.github/workflows/AutoBuild-OpenWrt-Newifi3.yml) | [![](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-Newifi3.yml/badge.svg)](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-Newifi3.yml) | [![](https://img.shields.io/badge/编译-配置-orange.svg?logo=apache-spark)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/Newifi3.config) | [![](https://img.shields.io/badge/下载-链接-blueviolet.svg?logo=hack-the-box)](https://github.com/sleel/AutoBuild-OpenWrt/releases?q=Newifi3&expanded=true) |
 | [![](https://img.shields.io/badge/luci_2512-istore_acc_6.12-32C955.svg?logo=openwrt)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/.github/workflows/AutoBuild-OpenWrt-X86-6.12.yml) | [![](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-X86-6.12.yml/badge.svg)](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-X86-6.12.yml) | [![](https://img.shields.io/badge/编译-配置-orange.svg?logo=apache-spark)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/istore.config) | [![](https://img.shields.io/badge/下载-链接-blueviolet.svg?logo=hack-the-box)](https://github.com/sleel/AutoBuild-OpenWrt/releases?q=6.12&expanded=true) |
 | [![](https://img.shields.io/badge/luci_2512-istore_acc_6.18-32C955.svg?logo=openwrt)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/.github/workflows/AutoBuild-OpenWrt-X86-6.18.yml) | [![](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-X86-6.18.yml/badge.svg)](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-X86-6.18.yml) | [![](https://img.shields.io/badge/编译-配置-orange.svg?logo=apache-spark)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/istore.config) | [![](https://img.shields.io/badge/下载-链接-blueviolet.svg?logo=hack-the-box)](https://github.com/sleel/AutoBuild-OpenWrt/releases?q=6.18&expanded=true) |
----------------------------
+
 ## 感谢
+
+本项目的实现离不开以下开源项目的支持：
 
 - [OpenWrt](https://github.com/openwrt/openwrt)
 - [iStore](https://github.com/linkease/istore)
@@ -37,4 +51,5 @@
 
 ## License
 
-[MIT](https://github.com/sleel/OpenWrt/blob/main/LICENSE) 
+本项目基于 [MIT](https://github.com/sleel/OpenWrt/blob/main/LICENSE) 协议开源。
+</content>
