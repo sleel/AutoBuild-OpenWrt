@@ -22,7 +22,7 @@
 <a href="https://github.com/P3TERX/Actions-OpenWrt"><img src="https://img.shields.io/badge/OpenWrt-P3TERX-blueviolet.svg?style=flat&logo=appveyor" alt="P3TERX"></a>
 </p>
 
-- **固件来源**：基于 [Lean's OpenWrt](https://github.com/coolsnowwolf/lede) [immortalwrt OpenWrt](https://github.com/immortalwrt/immortalwrt) 与 [istoreOS](https://github.com/istoreos) 源码
+- **固件来源**：基于 [immortalwrt OpenWrt](https://github.com/immortalwrt/immortalwrt) [Lean's OpenWrt](https://github.com/coolsnowwolf/lede) 与 [istoreOS](https://github.com/istoreos) 源码
 - **编译方式**：使用 GitHub Actions 拉取源码仓库进行云端自动编译
 - **支持平台**：`Newifi D2` 与 `X86-64`，编译产物基于 immortalwrt 与 Lean 源码，并集成 **iStore**（软件商店）功能
 
