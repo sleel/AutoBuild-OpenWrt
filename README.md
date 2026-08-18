@@ -10,8 +10,6 @@
 [![GitHub Forks](https://img.shields.io/github/forks/sleel/AutoBuild-OpenWrt.svg?style=flat-square&label=Forks&logo=github)](https://github.com/sleel/AutoBuild-OpenWrt/network/members)
 [![GitHub Download](https://img.shields.io/github/downloads/sleel/AutoBuild-OpenWrt/total.svg?style=flat-square&label=Download&logo=github)](https://github.com/sleel/AutoBuild-OpenWrt/releases)
 
-**[📖 项目说明](#-项目说明) · [📦 固件下载](#-固件下载) · [🙏 感谢](#-感谢) · [📄 License](#-license)**
-
 </div>
 
 ---
@@ -36,9 +34,9 @@
 
 | 平台 / 设备 | 编译状态 | 配置文件 | 固件下载 |
 | :---: | :---: | :---: | :---: |
+| [![Newifi D2 immortalwrt](https://img.shields.io/badge/NewifiD2-immortalwrt-32C955.svg?logo=openwrt)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/.github/workflows/AutoBuild-OpenWrt-Newifi3.yml) | [![](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-Newifi3.yml/badge.svg)](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-Newifi3.yml) | [![配置文件](https://img.shields.io/badge/编译-配置-orange.svg?logo=apache-spark)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/Newifi3.config) | [![下载链接](https://img.shields.io/badge/下载-链接-blueviolet.svg?logo=hack-the-box)](https://github.com/sleel/AutoBuild-OpenWrt/releases?q=Newifi3&expanded=true) |
 | [![X86-64 luci_2512-istore_acc_6.12](https://img.shields.io/badge/luci_2512-istore_acc_6.12-32C955.svg?logo=openwrt)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/.github/workflows/AutoBuild-OpenWrt-X86-6.12.yml) | [![](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-X86-6.12.yml/badge.svg)](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-X86-6.12.yml) | [![配置文件](https://img.shields.io/badge/编译-配置-orange.svg?logo=apache-spark)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/istore.config) | [![下载链接](https://img.shields.io/badge/下载-链接-blueviolet.svg?logo=hack-the-box)](https://github.com/sleel/AutoBuild-OpenWrt/releases?q=6.12&expanded=true) |
 | [![X86-64 luci_2512-istore_acc_6.18](https://img.shields.io/badge/luci_2512-istore_acc_6.18-32C955.svg?logo=openwrt)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/.github/workflows/AutoBuild-OpenWrt-X86-6.18.yml) | [![](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-X86-6.18.yml/badge.svg)](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-X86-6.18.yml) | [![配置文件](https://img.shields.io/badge/编译-配置-orange.svg?logo=apache-spark)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/istore.config) | [![下载链接](https://img.shields.io/badge/下载-链接-blueviolet.svg?logo=hack-the-box)](https://github.com/sleel/AutoBuild-OpenWrt/releases?q=6.18&expanded=true) |
-| [![Newifi D2 immortalwrt](https://img.shields.io/badge/NewifiD2-immortalwrt-32C955.svg?logo=openwrt)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/.github/workflows/AutoBuild-OpenWrt-Newifi3.yml) | [![](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-Newifi3.yml/badge.svg)](https://github.com/sleel/AutoBuild-OpenWrt/actions/workflows/AutoBuild-OpenWrt-Newifi3.yml) | [![配置文件](https://img.shields.io/badge/编译-配置-orange.svg?logo=apache-spark)](https://github.com/sleel/AutoBuild-OpenWrt/blob/main/Newifi3.config) | [![下载链接](https://img.shields.io/badge/下载-链接-blueviolet.svg?logo=hack-the-box)](https://github.com/sleel/AutoBuild-OpenWrt/releases?q=Newifi3&expanded=true) |
 
 ## 🙏 感谢
 
@@ -56,8 +54,6 @@
 ## 📄 License
 
 本项目基于 [MIT](https://github.com/sleel/OpenWrt/blob/main/LICENSE) 协议开源。
-
-<div align="right">
 
 [⬆️ 回到顶部](#-actions-openwrt)
 
