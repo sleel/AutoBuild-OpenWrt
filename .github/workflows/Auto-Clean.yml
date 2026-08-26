@@ -1,0 +1,60 @@
+name: Auto-Clean
+
+on:
+  # 自动清理：每天早上6点 (北京时间)
+#  schedule:
+#    - cron: 0 22 * * *
+  # 手动清理
+  workflow_dispatch:
+    inputs:
+      NUMBER:
+        description: '保留最新的 Release 数量 (默认: 0，即删除全部)'
+        default: '0'
+        required: false
+        type: string
+
+permissions:
+  contents: write  # 赋予删除 Release 和 Tag 的权限
+  actions: write   # 赋予删除 Workflow 运行记录的权限
+
+jobs:
+  auto_clean:
+    runs-on: ubuntu-22.04
+    steps:
+      # 1. 正常清理旧版本的 Release 及其绑定的 Tag
+      - name: Delete old Releases and attached Tags
+        uses: dev-drprasad/delete-older-releases@v0.3.3
+        with:
+          keep_latest: ${{ inputs.NUMBER || '0' }}
+          delete_tags: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 2. 核心大招：强制清剿“孤儿 Tag”（那些失去 Release 的残留幽灵）
+      - name: Clean up Orphan Tags
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "正在通过 GitHub API 拉取全量 Tags..."
+          ALL_TAGS=$(gh api repos/${{ github.repository }}/git/refs/tags --paginate --jq '.[].ref' | sed 's|refs/tags/||g')
+          
+          echo "正在拉取当前存活的 Releases 列表..."
+          RELEASE_TAGS=$(gh api repos/${{ github.repository }}/releases --paginate --jq '.[].tag_name')
+          
+          echo "开始交叉比对..."
+          for tag in $ALL_TAGS; do
+            # 如果某个 Tag 不存在于存活的 Release 列表中，说明它是残留的垃圾
+            if [ -n "$tag" ] && ! echo "$RELEASE_TAGS" | grep -qxF "$tag"; then
+              echo "💥 发现孤儿 Tag: $tag，执行强制物理超度！"
+              gh api -X DELETE "repos/${{ github.repository }}/git/refs/tags/$tag" || echo "⚠️ 删除失败: $tag"
+            fi
+          done
+
+      # 3. 清理废弃的 Workflow 运行记录
+      - name: Delete old Workflows
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          retain_days: 0       # 0天前的全部删除
+          keep_minimum_runs: 0 # 不保留最低运行次数
