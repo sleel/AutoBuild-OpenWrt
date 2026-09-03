@@ -17,7 +17,7 @@ sed -i 's/192.168.1.1/10.10.66.1/g' package/base-files/files/bin/config_generate
 #sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 
 # Modify hostname、version
-sed -i "s/hostname='LEDE'/hostname='NERV'/g" ./package/base-files/luci/bin/config_generate
+sed -i "s/hostname='LEDE'/hostname='NERV'/g" ./package/base-files/files/bin/config_generate
 sed -i "s/LEDE /SEELE BUILT ON $(TZ=UTC-8 date "+%Y.%m.%d") @ LEDE /g" ./package/lean/default-settings/files/zzz-default-settings
 
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' ./package/lean/default-settings/files/zzz-default-settings
