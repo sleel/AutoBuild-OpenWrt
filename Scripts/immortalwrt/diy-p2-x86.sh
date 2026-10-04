@@ -30,3 +30,7 @@ find package feeds -type d \( "${expr[@]}" \) 2>/dev/null | xargs -r rm -rf
 mv tmp_mypkgs/* package/
 rm -rf tmp_mypkgs
 find package -maxdepth 2 -name Makefile -exec sed -i 's|include \.\./\.\./luci\.mk|include $(TOPDIR)/feeds/luci/luci.mk|' {} +
+
+# /etc/firewall.user: keep across sysupgrade, ship empty file
+echo '/etc/firewall.user' >> package/base-files/files/etc/sysupgrade.conf
+mkdir -p files/etc && touch files/etc/firewall.user
